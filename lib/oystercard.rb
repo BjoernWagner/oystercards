@@ -13,6 +13,7 @@ class OysterCard
   end
 
   def deduct(money)
+    @balance -= money
   end
 
   def new_balance(money)

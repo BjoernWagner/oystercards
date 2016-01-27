@@ -12,8 +12,9 @@ describe Oystercard do
       expect{card.top_up(10.00)}.to change{card.balance}.by(10.00)
     end
 
-    it "raises an error when trying to add more than #{Oystercard::MAXIMUM_BALANCE}" do
-      expect{card.top_up(100.00)}.to raise_error "Warning! Cannot add more than #{Oystercard::MAXIMUM_BALANCE}"
+    it "raises an error when adding more than #{Oystercard::MAXIMUM_BALANCE}" do
+      message = "Warning! Cannot add more than #{Oystercard::MAXIMUM_BALANCE}"
+      expect{card.top_up(100.00)}.to raise_error message
     end
   end
 
@@ -41,13 +42,20 @@ describe Oystercard do
 
   describe '#touch_in' do
     it 'is in journey when touched in' do
+      card.top_up(Oystercard::MINIMUM_BALANCE)
       card.touch_in
       expect(card).to be_in_journey
+    end
+
+    it 'raises an error while touch in when below min balance' do
+      message = "Below minimum fare of #{Oystercard::MINIMUM_BALANCE}"
+      expect{card.touch_in}.to raise_error message
     end
   end
 
   describe '#touch_out' do
     it 'is not in journey when touched out' do
+      card.top_up(Oystercard::MINIMUM_BALANCE)
       card.touch_in
       card.touch_out
       expect(card).not_to be_in_journey

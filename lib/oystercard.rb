@@ -4,6 +4,7 @@ class Oystercard
 
   DEFAULT_BALANCE = 0.0
   MAXIMUM_BALANCE = 90.0
+  MINIMUM_BALANCE = 1.0
 
   def initialize
     @balance = DEFAULT_BALANCE
@@ -11,7 +12,7 @@ class Oystercard
   end
 
   def top_up(amount)
-    raise "Warning! Cannot add more than #{Oystercard::MAXIMUM_BALANCE}" if exceed_maximum?(amount)
+    raise "Warning! Cannot add more than #{MAXIMUM_BALANCE}" if exceed_maximum?(amount)
     @balance += amount
   end
 
@@ -24,6 +25,7 @@ class Oystercard
   end
 
   def touch_in
+    raise "Below minimum fare of #{MINIMUM_BALANCE}" if below_minimum?
     @in_journey = true
   end
 
@@ -35,6 +37,10 @@ class Oystercard
 
   def exceed_maximum?(amount)
     (@balance + amount) > 90
+  end
+
+  def below_minimum?
+    @balance < MINIMUM_BALANCE
   end
 
 end

@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   subject(:card) { Oystercard.new }
+  let(:entry_station) {double :entry_station}
 
   describe '#top_up' do
     it 'responds to #top_up with 1 argument' do
@@ -33,28 +34,41 @@ describe Oystercard do
   describe '#touch_in' do
     it 'is in journey when touched in' do
       card.top_up(Oystercard::MINIMUM_FARE)
-      card.touch_in
+      card.touch_in(entry_station)
       expect(card).to be_in_journey
     end
 
     it 'raises an error while touch in when below min balance' do
       message = "Below minimum fare of #{Oystercard::MINIMUM_FARE}"
-      expect{card.touch_in}.to raise_error message
+      expect{card.touch_in(entry_station)}.to raise_error message
+    end
+
+    it 'stores the entry station when touching in' do
+      card.top_up(Oystercard::MINIMUM_FARE)
+      card.touch_in(entry_station)
+      expect(card.entry_station).to eq entry_station
     end
   end
 
   describe '#touch_out' do
     it 'is not in journey when touched out' do
       card.top_up(Oystercard::MINIMUM_FARE)
-      card.touch_in
+      card.touch_in(entry_station)
       card.touch_out
       expect(card).not_to be_in_journey
     end
 
     it 'deducts by minimum fare when touch out' do
       card.top_up(Oystercard::MINIMUM_FARE)
-      card.touch_in
+      card.touch_in(entry_station)
       expect{card.touch_out}.to change{card.balance}.by(-Oystercard::MINIMUM_FARE)
+    end
+
+    it 'removes the entry station when touching out' do
+      card.top_up(Oystercard::MINIMUM_FARE)
+      card.touch_in(entry_station)
+      card.touch_out
+      expect(card.entry_station).to eq nil
     end
 
   end

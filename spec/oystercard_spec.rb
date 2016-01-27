@@ -24,16 +24,6 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    it 'responds to #deduct with one argument' do
-      expect(card).to respond_to(:deduct).with(1).argument
-    end
-
-    it 'subtracts the argument value from existing balance' do
-      expect{card.deduct(10.00)}.to change{card.balance}.by(-10.00)
-    end
-  end
-
   describe '#in_journey' do
     it 'when creating a new card it is not in journey' do
       expect(card.in_journey?).to eq false
@@ -42,24 +32,31 @@ describe Oystercard do
 
   describe '#touch_in' do
     it 'is in journey when touched in' do
-      card.top_up(Oystercard::MINIMUM_BALANCE)
+      card.top_up(Oystercard::MINIMUM_FARE)
       card.touch_in
       expect(card).to be_in_journey
     end
 
     it 'raises an error while touch in when below min balance' do
-      message = "Below minimum fare of #{Oystercard::MINIMUM_BALANCE}"
+      message = "Below minimum fare of #{Oystercard::MINIMUM_FARE}"
       expect{card.touch_in}.to raise_error message
     end
   end
 
   describe '#touch_out' do
     it 'is not in journey when touched out' do
-      card.top_up(Oystercard::MINIMUM_BALANCE)
+      card.top_up(Oystercard::MINIMUM_FARE)
       card.touch_in
       card.touch_out
       expect(card).not_to be_in_journey
     end
+
+    it 'deducts by minimum fare when touch out' do
+      card.top_up(Oystercard::MINIMUM_FARE)
+      card.touch_in
+      expect{card.touch_out}.to change{card.balance}.by(-Oystercard::MINIMUM_FARE)
+    end
+
   end
 
 

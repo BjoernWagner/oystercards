@@ -10,7 +10,7 @@ class Oystercard
   end
 
   def top_up(amount)
-    raise "Over maximum balance" if exceed_maximum?(amount)
+    raise "Warning! Cannot add more than #{Oystercard::MAXIMUM_BALANCE}" if exceed_maximum?(amount)
     @balance += amount
   end
 
@@ -18,5 +18,8 @@ class Oystercard
     (@balance + amount) > 90
   end
 
+  def deduct(amount)
+    @balance -= amount
+  end
 
 end

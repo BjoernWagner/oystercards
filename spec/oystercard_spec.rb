@@ -1,7 +1,7 @@
 require 'oystercard'
 
-describe OysterCard do
-  subject(:card) { OysterCard.new }
+describe Oystercard do
+  subject(:card) { Oystercard.new }
 
   describe '#top_up' do
     it 'responds to #top_up with 1 argument' do
@@ -12,8 +12,8 @@ describe OysterCard do
       expect{card.top_up(10.00)}.to change{card.balance}.by(10.00)
     end
 
-    it "raises an error when trying to add more than #{OysterCard::Limit}" do
-      expect{card.top_up(100.00)}.to raise_error "Warning! Cannot add more than #{OysterCard::Limit}"
+    it "raises an error when trying to add more than #{Oystercard::MAXIMUM_BALANCE}" do
+      expect{card.top_up(100.00)}.to raise_error "Warning! Cannot add more than #{Oystercard::MAXIMUM_BALANCE}"
     end
   end
 

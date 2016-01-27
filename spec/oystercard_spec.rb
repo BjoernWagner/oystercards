@@ -31,6 +31,28 @@ describe Oystercard do
     it 'subtracts the argument value from existing balance' do
       expect{card.deduct(10.00)}.to change{card.balance}.by(-10.00)
     end
-
   end
+
+  describe '#in_journey' do
+    it 'when creating a new card it is not in journey' do
+      expect(card.in_journey?).to eq false
+    end
+  end
+
+  describe '#touch_in' do
+    it 'is in journey when touched in' do
+      card.touch_in
+      expect(card).to be_in_journey
+    end
+  end
+
+  describe '#touch_out' do
+    it 'is not in journey when touched out' do
+      card.touch_in
+      card.touch_out
+      expect(card).not_to be_in_journey
+    end
+  end
+
+
 end

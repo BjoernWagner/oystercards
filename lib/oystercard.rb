@@ -27,9 +27,7 @@ class Oystercard
 
   def touch_out(exit_station)
     deduct(MINIMUM_FARE)
-    hash = {}
-    hash[@entry_station] = exit_station
-    previous_journeys.push(hash)
+    log_trip(@entry_station, exit_station)
     @entry_station = nil
   end
 
@@ -45,6 +43,12 @@ class Oystercard
 
   def deduct(amount)
     @balance -= amount
+  end
+
+  def log_trip(entry, exit)
+    hash = {}
+    hash[entry] = exit
+    previous_journeys.push(hash)
   end
 
 end

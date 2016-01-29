@@ -2,7 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   subject(:card) { Oystercard.new }
-  let(:entry_station) {double :entry_station}
+  let(:entry_station) {double :entry_station => "A"}
   let(:exit_station) {double :exit_station}
 
   describe '#top_up' do
@@ -44,9 +44,21 @@ describe Oystercard do
       expect{card.touch_in(entry_station)}.to raise_error message
     end
 
+    it 'saves entry station on touch in' do
+      card.top_up(Oystercard::MINIMUM_FARE)
+      card.touch_in(entry_station)
+      expect(card.entry_station).to eq entry_station
+    end
+
+    it 'logs a journey with entry station on touch in' do
+      card.top_up(Oystercard::MINIMUM_FARE)
+      card.touch_in(entry_station)
+      expect(card.previous_journeys.last).to eq ({entry_station=>nil})
+    end
+
   end
 
-  describe '#touch' do
+  describe '#touch_out' do
     it 'is not in journey when touched out' do
       card.top_up(Oystercard::MINIMUM_FARE)
       card.touch_in(entry_station)
@@ -67,27 +79,26 @@ describe Oystercard do
       expect(card.entry_station).to eq nil
     end
 
-  end
-
-  describe '#journey' do
-    it 'holds journey information' do
-      expect(card.previous_journeys).to eq []
-    end
-
-    it 'saves entry station on touch in' do
-      card.top_up(Oystercard::MINIMUM_FARE)
-      card.touch_in(entry_station)
-      expect(card.entry_station).to eq entry_station
-    end
-
     it 'logs exit station on touch out' do
       card.top_up(Oystercard::MINIMUM_FARE)
       card.touch_in(entry_station)
       card.touch_out(exit_station)
-      expect(card.previous_journeys).to include ({entry_station=>exit_station})
+      expect(card.previous_journeys.last).to eq ({entry_station=>exit_station})
     end
 
+    it 'updates previous journey hash if oystercard is in journey' do
+      card.top_up(Oystercard::MINIMUM_FARE)
+      card.touch_in(entry_station)
+      card.touch_out(exit_station)
+      expect(card.previous_journeys.length).to eq 1
+    end
 
+  end
+
+  describe 'journey creation behavior' do
+    it 'holds journey information' do
+      expect(card.previous_journeys).to eq []
+    end
 
   end
 

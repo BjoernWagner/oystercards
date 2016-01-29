@@ -23,6 +23,7 @@ class Oystercard
   def touch_in(entry_station)
     raise "Below minimum fare of #{MINIMUM_FARE}" if below_minimum?
     @entry_station =  entry_station
+    log_trip(@entry_station, @exit_station)
   end
 
   def touch_out(exit_station)
@@ -46,9 +47,15 @@ class Oystercard
   end
 
   def log_trip(entry, exit)
-    hash = {}
-    hash[entry] = exit
-    previous_journeys.push(hash)
+    # if we're in journey, we want to modify the previous hash
+    # and not create a new one
+    if in_journey? && exit != nil
+      previous_journeys.last[entry] = exit
+    else
+      hash = {}
+      hash[entry] = exit
+      previous_journeys.push(hash)
+    end
   end
 
 end

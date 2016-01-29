@@ -47,9 +47,7 @@ class Oystercard
   end
 
   def log_trip(entry, exit)
-    # if we're in journey, we want to modify the previous hash
-    # and not create a new one
-    if in_journey? && exit != nil
+    if (in_journey? && exit)
       previous_journeys.last[entry] = exit
     else
       hash = {}
